@@ -36,13 +36,10 @@ syn match lessVariableAssignment "\%(@\{1,2}[[:alnum:]_-]\+\s*\)\@<=:" nextgroup
 hi def link lessVariable Identifier
 
 " mixin:    .mixin (arguments) when (condition)
-" FIXME: 
-" if the `(` nested too much(when there is a function), then the highlight will be wrong.
-" like: .mixin(lighten(@color) + #333, #888)
-syn match lessMixin "\.[[:alnum:]_-]\+" skipwhite nextgroup=lessMixinArguments 
-syn match lessMixinArguments "([^)]\{-})" contained contains=@lessCssAttributes,lessVariable,lessFunction skipwhite nextgroup=lessMixinWhen
-syn keyword lessMixinWhen when contained skipwhite nextgroup=lessMixinGuard
-syn match lessMixinGuard "(.\+)" contained contains=@lessCssAttributes,lessVariable,lessFunction skipwhite nextgroup=lessDefinition 
+" the char list we will not highlighted
+syn match lessMixinChars "[(),:]" contained 
+syn match lessMixin "\.[[:alnum:]_-]\+[^{;]*" contains=@lessCssAttributes,lessVariable,lessFunction,lessMixinWhen,lessMixinChars
+syn keyword lessMixinWhen when contained
 hi def link lessMixin cssClassName
 hi def link lessMixinWhen Label
 
