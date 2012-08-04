@@ -28,20 +28,23 @@ syn match lessProperty "\%([{};]\s*\|^\s*\)\@<=\%([[:alnum:]-]\)\+\s*:" contains
 " ([^{};])* 
 syn match lessAttribute "\%([^{};]\)*" contained contains=@lessCssAttributes,lessVariable,lessFunction,lessInterpolation
 
-" variable:    @variable-name: variable-value
+" variable
+" @variable-name: variable-value
 syn match lessVariable "@\{1,2}[[:alnum:]_-]\+"
 " (?<=@{1,2}[\w_-]+\s*):
 syn match lessVariableAssignment "\%(@\{1,2}[[:alnum:]_-]\+\s*\)\@<=:" nextgroup=lessAttribute skipwhite
 hi def link lessVariable Identifier
 
 " mixin:    .mixin (arguments) when (condition)
+" FIXME: 
+" if the `(` nested too much(when there is a function), then the highlight will be wrong.
+" like: .mixin(lighten(@color) + #333, #888)
 syn match lessMixin "\.[[:alnum:]_-]\+" skipwhite nextgroup=lessMixinArguments 
-syn match lessMixinArguments "([^)]*)" contained contains=lessAttribute skipwhite nextgroup=lessMixinWhen
-syn match lessMixinWhen "when" contained nextgroup=lessMixinGuard skipwhite
-syn match lessMixinGuard "([^)]*)" contained contains=lessAttribute skipwhite nextgroup=lessDefinition 
-hi def link lessMixin Statement
-" FIXME: can not highlight `when`... why? = =
-hi def link lessMixinWhen Identifier
+syn match lessMixinArguments "([^)]\{-})" contained contains=@lessCssAttributes,lessVariable,lessFunction skipwhite nextgroup=lessMixinWhen
+syn keyword lessMixinWhen when contained skipwhite nextgroup=lessMixinGuard
+syn match lessMixinGuard "(.\+)" contained contains=@lessCssAttributes,lessVariable,lessFunction skipwhite nextgroup=lessDefinition 
+hi def link lessMixin cssClassName
+hi def link lessMixinWhen Label
 
 " & syntax
 syn match lessAmpersand "&"
@@ -67,11 +70,9 @@ syn keyword lessFunction iscolor isnumber isstring iskeyword isurl ispixel isper
 hi def link lessFunction Function
 
 " comments 
-" TODO: well~ taken from sass syntax file, I can not understand it now. >.<
-" pattern\@! => (?!pattern), \%(pattern\) => (?:pattern)
-syn keyword lessTodo        FIXME NOTE TODO OPTIMIZE XXX contained
-syn region  lessComment     start="^\z(\s*\)//"  end="^\%(\z1 \)\@!" contains=lessTodo,@Spell
-syn region  lessCssComment  start="^\z(\s*\)/\*" end="^\%(\z1 \)\@!" contains=lessTodo,@Spell
+syn keyword lessTodo FIXME NOTE TODO OPTIMIZE XXX contained
+syn match lessComment "\/\/.*" contains=@Spell,lessTodo
+syn region lessCssComment start="/\*" end="\*/" contains=@Spell,lessTodo
 hi def link lessCssComment lessComment
 hi def link lessComment Comment
 hi def link lessTodo Todo
