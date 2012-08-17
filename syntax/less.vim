@@ -38,10 +38,10 @@ hi def link lessVariable Identifier
 " mixin:    .mixin (arguments) when (condition)
 " the char list we will not highlighted
 syn match lessMixinChars "[(),:]" contained 
-syn match lessMixin "\.[[:alnum:]_-]\+[^{;]*" contains=@lessCssAttributes,lessVariable,lessFunction,lessMixinWhen,lessMixinChars
-syn keyword lessMixinWhen when contained
+syn match lessMixin "\.[[:alnum:]_-]\+[^{;]*" contains=@lessCssAttributes,lessVariable,lessFunction,lessMixinGaurd,lessMixinChars
+syn keyword lessMixinGaurd when and not contained
 hi def link lessMixin cssClassName
-hi def link lessMixinWhen Label
+hi def link lessMixinGaurd Keyword
 
 " & syntax
 syn match lessAmpersand "&"
